@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include "trabalho1.h"
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 DataQuebrada quebraData(char data[]);
 
@@ -90,12 +92,37 @@ int teste(int a)
     Não utilizar funções próprias de string (ex: strtok)   
     pode utilizar strlen para pegar o tamanho da string
  */
-int q1(char data[])
-{
+int q1(char data[]){
   int datavalida = 1;
-
+  int dia, mes, ano;
   //quebrar a string data em strings sDia, sMes, sAno
-
+  sscanf(data, "%d/%d/%d", &dia, &mes, &ano);
+  if(mes < 1 || mes > 12){
+    datavalida = 0;
+  }
+  if(dia < 1 || dia > 31){
+    datavalida = 0;
+  }
+  else if(ano % 4 != 0 && mes == 2){
+    if(dia > 28){
+      datavalida = 0;
+    }
+  }
+  else if(ano % 4 == 0 && ano % 100 != 0 && mes == 2){
+    if(dia > 29){
+      datavalida = 0;
+    }
+  }
+  else if(ano % 4 == 0 && ano % 100 == 0 && ano % 400 == 0 && mes == 2){
+    if(dia > 29){
+      datavalida = 0;
+    }
+  }
+  else if(ano % 4 == 0 && ano % 100 == 0 && ano % 400 != 0 && mes == 2){
+    if(dia > 28){
+      datavalida = 0;
+    }
+  }
 
   //printf("%s\n", data);
 
@@ -104,7 +131,6 @@ int q1(char data[])
   else
       return 0;
 }
-
 
 
 /*
@@ -135,10 +161,30 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
       return dma;
     }else{
       //verifique se a data final não é menor que a data inicial
-      
+      if(datafinal < datainicial){
+        dma.retorno = 4;
+        return dma;
+      }
       //calcule a distancia entre as datas
-
-
+      int dia[2], mes[2], ano[2];
+      int qtdDias[2];
+      sscanf(datainicial, "%d/%d/%d", &dia[0], &mes[0], &ano[0]);
+      sscanf(datafinal, "%d/%d/%d", &dia[1], &mes[1], &ano[1]);
+      struct tm data1 = {0}, data2 = {0};
+      data1.tm_mday = dia[0];
+      data1.tm_mon = mes[0] - 1;
+      data1.tm_year = ano[0] - 1900;
+      data2.tm_mday = dia[1];
+      data2.tm_mon = mes[1] - 1;
+      data2.tm_year = ano[1] - 1900;
+      time_t t1 = mktime(&data1);
+      time_t t2 = mktime(&data2);
+      time_t dif = t1 - t2;
+      struct tm *dataF = localtime(&dif);
+      dma.qtdDias = dataF->tm_mday;
+      dma.qtdMeses = dataF->tm_mon + 1;
+      dma.qtdAnos = dataF->tm_year + 1900;
+      
       //se tudo der certo
       dma.retorno = 1;
       return dma;
