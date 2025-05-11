@@ -25,7 +25,6 @@
 #include "trabalho1.h"
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 DataQuebrada quebraData(char data[]);
 
@@ -166,29 +165,34 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
         return dma;
       }
       //calcule a distancia entre as datas
+      datainicial[strcspn(datainicial, "\n")] = '\0';
+      datafinal[strcspn(datafinal, "\n")] = '\0';
       int dia[2], mes[2], ano[2];
-      int qtdDias[2];
+      int diasMes[] = {31,28,31,30,31,30,31,31,30,31,30,31};
       sscanf(datainicial, "%d/%d/%d", &dia[0], &mes[0], &ano[0]);
       sscanf(datafinal, "%d/%d/%d", &dia[1], &mes[1], &ano[1]);
-      struct tm data1 = {0}, data2 = {0};
-      data1.tm_mday = dia[0];
-      data1.tm_mon = mes[0] - 1;
-      data1.tm_year = ano[0] - 1900;
-      data2.tm_mday = dia[1];
-      data2.tm_mon = mes[1] - 1;
-      data2.tm_year = ano[1] - 1900;
-      time_t t1 = mktime(&data1);
-      time_t t2 = mktime(&data2);
-      time_t dif = t1 - t2;
-      struct tm *dataF = localtime(&dif);
-      dma.qtdDias = dataF->tm_mday;
-      dma.qtdMeses = dataF->tm_mon + 1;
-      dma.qtdAnos = dataF->tm_year + 1900;
-      
-      //se tudo der certo
+      if((ano[1] % 4 == 0 && ano[1] % 100 != 0) || (ano[1] % 400 == 0)){
+        diasMes[1] = 29;
+      }
+      //AJUSTAR DIAS
+      if(dia[1] < dia[0]){
+          mes[1] -= 1;
+          if(mes[1] == 0){
+            mes[1] = 12;
+            ano[1] -= 1;
+          }
+          dia[1] += diasMes[mes[1] - 1];
+      }
+      //AJUSTAR MESES
+      if(mes[1] < mes[0]){
+        ano[1] -= 1;
+        mes[1] += 12;
+      }
+      dma.qtdDias = dia[1] - dia[0];
+      dma.qtdMeses = mes[1] - mes[0];
+      dma.qtdAnos = ano[1] - ano[0];
       dma.retorno = 1;
       return dma;
-      
     }
     
 }
@@ -205,8 +209,21 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
  */
 int q3(char *texto, char c, int isCaseSensitive)
 {
-    int qtdOcorrencias = -1;
-
+    int qtdOcorrencias = 0;
+    if(isCaseSensitive == 1){
+      for(int i = 0; texto[i] != '\0'; i++){
+        if(texto[i] == c){
+          qtdOcorrencias++;
+        }
+      }
+    }
+    if(isCaseSensitive != 1){
+      for(int i = 0; texto[i] != '\0'; i++){
+        if(texto[i] == c || texto[i] == c + 32){
+          qtdOcorrencias++;
+        }
+      }
+    }
     return qtdOcorrencias;
 }
 
@@ -227,8 +244,15 @@ int q3(char *texto, char c, int isCaseSensitive)
  */
 int q4(char *strTexto, char *strBusca, int posicoes[30])
 {
-    int qtdOcorrencias = -1;
+    int qtdOcorrencias = 0;
+    char *posicao = strTexto;
 
+    while((posicao = strstr(posicao, strBusca)) != NULL){
+      posicoes[qtdOcorrencias] = (posicao - strTexto);
+      qtdOcorrencias++;
+      posicoes[qtdOcorrencias] = (posicao - strTexto) + strlen(strBusca) - 1;
+      posicao += strlen(strBusca);
+    }
     return qtdOcorrencias;
 }
 

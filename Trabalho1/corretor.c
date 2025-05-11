@@ -35,12 +35,12 @@ int main()
     //testSomar();
     //testFatorial();
     //testQ1();
-    testQ2();
-    /*testQ3();
+    //testQ2();
+    //testQ3();
     testQ4();
-    testQ5();
-    testQ6();
-    testQ7(); */
+    //testQ5();
+    //testQ6();
+    //testQ7();
 }
 
 void testSomar()
@@ -134,11 +134,11 @@ void testQ3()
 {
     char str[250];
     strcpy(str, "Renato Lima Novais");
-    printf("%d\n", q3(str, 'a', 0) == 3);
-    printf("%d\n", q3(str, 'b', 0) == 0);
-    printf("%d\n", q3(str, 'l', 1) == 0);
-    printf("%d\n", q3(str, 'l', 0) == 1);
-    printf("%d\n", q3(str, 'L', 0) == 1);
+    printf("%d\n", q3(str, 'a', 0));
+    printf("%d\n", q3(str, 'b', 0));
+    printf("%d\n", q3(str, 'l', 1));
+    printf("%d\n", q3(str, 'l', 0));
+    printf("%d\n", q3(str, 'L', 0));
 }
 
 void testQ4()
@@ -149,29 +149,29 @@ void testQ4()
     int i;
     for (i = 0; i < 30; i++)
     {
-        posicoes[i] = -1;
+        posicoes[i] = 0;
     }
     strcpy(strTexto, "Laboratorio de programacao: para ratos de programação");
     strcpy(strBusca, "rato");
-    printf("%d\n", q4(strTexto, strBusca, posicoes) == 2);
-    printf("%d\n", posicoes[0] == 5);
-    printf("%d\n", posicoes[1] == 8);
-    printf("%d\n", posicoes[2] == 34);
-    printf("%d\n", posicoes[3] == 37);
+    printf("%d\n", q4(strTexto, strBusca, posicoes));
+    printf("%d\n", posicoes[0]);
+    printf("%d\n", posicoes[1]);
+    printf("%d\n", posicoes[2]);
+    printf("%d\n", posicoes[3]);
 
     for (i = 0; i < 30; i++)
     {
-        posicoes[i] = -1;
+        posicoes[i] = 0;
     }
     strcpy(strTexto, "Olá, o mundo é muito grande. Tem muitas pessoas, e muitos problemas");
     strcpy(strBusca, "mui");
-    printf("%d\n", q4(strTexto, strBusca, posicoes) == 3);
-    printf("%d\n", posicoes[0] == 16);
-    printf("%d\n", posicoes[1] == 18);
-    printf("%d\n", posicoes[2] == 34);
-    printf("%d\n", posicoes[3] == 36);
-    printf("%d\n", posicoes[4] == 52);
-    printf("%d\n", posicoes[5] == 54);
+    printf("%d\n", q4(strTexto, strBusca, posicoes));
+    printf("%d\n", posicoes[0]);
+    printf("%d\n", posicoes[1]);
+    printf("%d\n", posicoes[2]);
+    printf("%d\n", posicoes[3]);
+    printf("%d\n", posicoes[4]);
+    printf("%d\n", posicoes[5]);
 }
 
 void testQ5()
