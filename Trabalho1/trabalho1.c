@@ -216,7 +216,7 @@ int q3(char *texto, char c, int isCaseSensitive){
   }
   if(isCaseSensitive != 1){
     for(int i = 0; texto[i] != '\0'; i++){
-      if(texto[i] == c || texto[i] == c + 32){
+      if(texto[i] == c || texto[i] == c + 32 || texto[i] == c - 32){
         qtdOcorrencias++;
       }
     }
