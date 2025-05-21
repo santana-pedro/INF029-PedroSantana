@@ -35,7 +35,7 @@ int main()
     //testSomar();
     //testFatorial();
     //testQ1();
-    //testQ2();
+    testQ2();
     //testQ3();
     //testQ4();
     //testQ5();
@@ -62,14 +62,13 @@ void testFatorial()
     printf("%d\n", fatorial(5) == 120);
 }
 
-void testQ1()
-{
+void testQ1(){
     char str[11];
     strcpy(str, "29/02/2015");
     printf("%d\n", q1(str) == 0);
     strcpy(str, "29/02/2012");
     printf("%d\n", q1(str) == 1);
-    strcpy(str, "9/13/2014");
+    strcpy(str, "9/3/2014");
     printf("%d\n", q1(str) == 0);
     strcpy(str, "45/4/2014");
     printf("%d\n", q1(str) == 0);
@@ -77,8 +76,7 @@ void testQ1()
     printf("%d\n", q1(str) == 0);
 }
 
-void testQ2()
-{
+void testQ2(){
     char datainicial[20], datafinal[20];
     int qtdDias, qtdMeses, qtdAnos;
     DiasMesesAnos dma;
