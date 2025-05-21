@@ -162,35 +162,35 @@ DiasMesesAnos q2(char datainicial[], char datafinal[]){
       dma.retorno = 4;
       return dma;
     }
-    //calcule a distancia entre as datas
-    datainicial[strcspn(datainicial, "\n")] = '\0';
-    datafinal[strcspn(datafinal, "\n")] = '\0';
-    int dia[2], mes[2], ano[2];
-    int diasMes[] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    sscanf(datainicial, "%d/%d/%d", &dia[0], &mes[0], &ano[0]);
-    sscanf(datafinal, "%d/%d/%d", &dia[1], &mes[1], &ano[1]);
-    if((ano[1] % 4 == 0 && ano[1] % 100 != 0) || (ano[1] % 400 == 0)){
-      diasMes[1] = 29;
+    else{
+      //calcule a distancia entre as datas
+      int dia[2], mes[2], ano[2];
+      int diasMes[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+      sscanf(datainicial, "%d/%d/%d", &dia[0], &mes[0], &ano[0]);
+      sscanf(datafinal, "%d/%d/%d", &dia[1], &mes[1], &ano[1]);
+      if((ano[1] % 4 == 0 && ano[1] % 100 != 0) || (ano[1] % 400 == 0)){
+        diasMes[1] = 29;
+      }
+      //AJUSTAR DIAS
+      if(dia[1] < dia[0]){
+          mes[1] -= 1;
+          if(mes[1] == 0){
+            mes[1] = 12;
+            ano[1] -= 1;
+          }
+          dia[1] += diasMes[mes[1] - 1];
+      }
+      //AJUSTAR MESES
+      if(mes[1] < mes[0]){
+        ano[1] -= 1;
+        mes[1] += 12;
+      }
+      dma.qtdDias = dia[1] - dia[0];
+      dma.qtdMeses = mes[1] - mes[0];
+      dma.qtdAnos = ano[1] - ano[0];
+      dma.retorno = 1;
+      return dma;
     }
-    //AJUSTAR DIAS
-    if(dia[1] < dia[0]){
-        mes[1] -= 1;
-        if(mes[1] == 0){
-          mes[1] = 12;
-          ano[1] -= 1;
-        }
-        dia[1] += diasMes[mes[1] - 1];
-    }
-    //AJUSTAR MESES
-    if(mes[1] < mes[0]){
-      ano[1] -= 1;
-      mes[1] += 12;
-    }
-    dma.qtdDias = dia[1] - dia[0];
-    dma.qtdMeses = mes[1] - mes[0];
-    dma.qtdAnos = ano[1] - ano[0];
-    dma.retorno = 1;
-    return dma;
   }
     
 }

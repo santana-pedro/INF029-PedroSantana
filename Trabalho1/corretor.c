@@ -37,7 +37,7 @@ int main()
     //testQ1();
     //testQ2();
     //testQ3();
-    testQ4();
+    //testQ4();
     //testQ5();
     //testQ6();
     //testQ7();
@@ -79,7 +79,7 @@ void testQ1()
 
 void testQ2()
 {
-    char datainicial[11], datafinal[11];
+    char datainicial[20], datafinal[20];
     int qtdDias, qtdMeses, qtdAnos;
     DiasMesesAnos dma;
 
