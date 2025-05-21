@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #define TRUE -1
 #define FALSE -2
 
@@ -13,6 +14,7 @@ void zerarTabuleiro(){
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
             velha[j][i].preenchido = 0;
+            velha[j][i].tipo = '#';
         }
     }
 } 
@@ -32,44 +34,150 @@ int verificarTabuleiroJogada(int letra, int num){
     }
 }
 
-int verificarTabuleiroResultado(char tipo){
+int verificarTabuleiroResultado(char jogadorTp){
+    struct Resultado{
+        char tipo; //X ou O
+        int venceu;
+    }resultado;
+    resultado.venceu = 0;
+    int achouVencedor = 0;
     //HORIZONTAL
+    for(int i = 0; i < 3; i++){
+        if(velha[i][0].preenchido == 1){
+            int iguais = 0;
+            for(int j = 1; j < 3; j++){
+                if(velha[i][j].preenchido == 1 && velha[i][j].tipo == velha[i][0].tipo){
+                    iguais++;
+                }
+            }
+            if(iguais == 2){
+                resultado.venceu = 1;
+                resultado.tipo = velha[i][0].tipo;
+                break;
+            }
+        }
+        if(resultado.venceu == 1){
+            achouVencedor = 1;
+            break;
+        }
+    }
     //VERTICAL
+    for(int i = 0; i < 3; i++){
+        if(velha[0][i].preenchido == 1){
+            int iguais = 0;
+            for(int j = 1; j < 3; j++){
+                if(velha[j][i].preenchido == 1 && velha[j][i].tipo == velha[0][i].tipo){
+                    iguais++;
+                }
+            }
+            if(iguais == 2){
+                resultado.venceu = 1;
+                resultado.tipo = velha[0][i].tipo;
+                break;
+            }
+        }
+        if(resultado.venceu == 1){
+            achouVencedor = 1;
+            break;
+        }
+    }
     //DIAGONAL
+    for(int i = 0; i < 3; i++){
+        if(velha[i][i].preenchido == 1){
+            int iguais = 0;
+            for(int j = 1; j < 3; j++){
+                if(velha[j][j].preenchido == 1 && velha[j][j].tipo == velha[i][i].tipo){
+                    iguais++;
+                }
+            }
+            if(iguais == 2){
+                resultado.venceu = 1;
+                resultado.tipo = velha[i][i].tipo;
+                break;
+            }
+        }
+        if(resultado.venceu == 1){
+            achouVencedor = 1;
+            break;
+        }
+    }
+    if(achouVencedor == 1)
+        return 1;
+    else 
+        return 0;
+}
+
+void jogadaX(){
+    int letra, num;
+    char celulaInteresse[10];
+    printf("Jogador X, informe a célula de interesse (Ex: A3): ");
+    fgets(celulaInteresse, 10, stdin);
+    if(celulaInteresse[0] >= 97 && celulaInteresse[0] <= 122){
+        celulaInteresse[0] -= 32;
+    }
+    letra = celulaInteresse[0] - 65;
+    num = celulaInteresse[1] - 49;
+    if(verificarTabuleiroJogada(letra, num) == TRUE){
+        velha[letra][num].preenchido = 1;
+        velha[letra][num].tipo = 'X';
+    }
+    else if(verificarTabuleiroJogada(letra, num) == FALSE){
+        jogadaX();
+    }
+}
+
+void jogadaO(){
+    int letra, num;
+    char celulaInteresse[10];
+    printf("Jogador O, informe a célula de interesse (Ex: A3): ");
+    fgets(celulaInteresse, 10, stdin);
+    if(celulaInteresse[0] >= 97 && celulaInteresse[0] <= 122){
+        celulaInteresse[0] -= 32;
+    }
+    letra = celulaInteresse[0] - 65;
+    num = celulaInteresse[1] - 49;
+    if(verificarTabuleiroJogada(letra, num) == TRUE){
+        velha[letra][num].preenchido = 1;
+        velha[letra][num].tipo = 'O';
+    }
+    else if(verificarTabuleiroJogada(letra, num) == FALSE){
+        jogadaO();
+    }
+}
+
+void imprimirTabuleiro(){
+    for(int i = 0; i < 3; i++){
+        printf("%c ", i + 65);
+        for(int j = 0; j < 3; j++){
+            printf("%c ", velha[i][j].tipo);
+        }
+        printf("\n");
+    }
 }
 
 int main(){
+    //INICIO
     zerarTabuleiro();
-    int letra, num;
-    char celulaInteresse[2];
-
-    //JOGADA X
-    printf("Jogador X, informe a célula de interesse (Ex: A3): ");
-    fgets(celulaInteresse, 2, stdin);
-    celulaInteresse[strcspn(celulaInteresse, "\n")] = '\0';
-    if(celulaInteresse[0] >= 97 && celulaInteresse[0] <= 122){
-        celulaInteresse[0] -= 32;
+    //JOGO
+    int final = 0;
+    char str;
+    while(final == 0){
+        imprimirTabuleiro();
+        jogadaX();
+        str = 'X';
+        final = verificarTabuleiroResultado(str);
+        if(final == 1){
+            printf("Jogador do tipo: %c ganhou \n", str);
+            break;
+        }
+        imprimirTabuleiro();
+        jogadaO();
+        str = 'O';
+        final = verificarTabuleiroResultado(str);
+        if(final == 1){
+            printf("Jogador do tipo: %c ganhou \n", str);
+            break;
+        }
     }
-    letra = celulaInteresse[0] - 65;
-    num = celulaInteresse[1] - 49;
-    if(verificarTabuleiroJogada(letra, num) == TRUE){
-        velha[letra][num].preenchido = 1;
-        velha[letra][num].tipo = 'O';
-    }
-
-    //JOGADA O
-    printf("Jogador O, informe a célula de interesse (Ex: A3): ");
-    fgets(celulaInteresse, 2, stdin);
-    celulaInteresse[strcspn(celulaInteresse, "\n")] = '\0';
-    if(celulaInteresse[0] >= 97 && celulaInteresse[0] <= 122){
-        celulaInteresse[0] -= 32;
-    }
-    letra = celulaInteresse[0] - 65;
-    num = celulaInteresse[1] - 49;
-    if(verificarTabuleiroJogada(letra, num) == TRUE){
-        velha[letra][num].preenchido = 1;
-        velha[letra][num].tipo = 'O';
-    }
-    
     return 0;
 }

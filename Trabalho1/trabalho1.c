@@ -376,21 +376,16 @@ int q6(int numerobase, int numerobusca){
   //HORIZONTAL
     //INDO
   for(int i = 0; i < 8; i++){
-    for(int i = 0; i < 8; i++){
-      for(int j = 0; j < 10; j++){
-        contP = 0;
-        for(int h = j; h < j + 5; h++){
-          if(matriz[i][h] != palavra[contP]){
-            achou = 0;
-            break;
-          }
-          contP++;
-          if(contP == 5){
-            achou = 1;
-            break;
-          }
+    for(int j = 0; j < 10; j++){
+      contP = 0;
+      for(int h = j; h < j + 5; h++){
+        if(matriz[i][h] != palavra[contP]){
+          achou = 0;
+          break;
         }
-        if(achou == 1){
+        contP++;
+        if(contP == 5){
+          achou = 1;
           break;
         }
       }
@@ -398,7 +393,11 @@ int q6(int numerobase, int numerobusca){
         break;
       }
     }
+    if(achou == 1){
+      break;
+    }
   }
+
     //VOLTANDO
   if(achou == 0){
     for(int i = 8; i >= 0; i--){
