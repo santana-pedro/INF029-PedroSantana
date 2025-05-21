@@ -240,14 +240,26 @@ int q3(char *texto, char c, int isCaseSensitive){
 
  */
 int q4(char *strTexto, char *strBusca, int posicoes[30]){
-  int qtdOcorrencias = 0;
-  char *posicao = strTexto;
-
-  while((posicao = strstr(posicao, strBusca)) != NULL){
-    posicoes[qtdOcorrencias] = (posicao - strTexto);
-    qtdOcorrencias++;
-    posicoes[qtdOcorrencias] = (posicao - strTexto) + strlen(strBusca) - 1;
-    posicao += strlen(strBusca);
+  int qtdOcorrencias = 0, qtdChar, posFinal, contPos = 0;
+  for(int i = 0; i < strlen(strTexto); i++){
+    qtdChar = 0;
+    posFinal = 0;
+    if(strBusca[qtdChar] == strTexto[i]){
+      qtdChar++;
+      for(int j = i + 1; j < i + strlen(strBusca); j++){
+        if(strBusca[qtdChar] == strTexto[j]){
+            qtdChar++;
+            posFinal = j;
+        }
+      }
+      if(qtdChar == strlen(strBusca)){
+        posicoes[contPos] = i + 1;
+        contPos++;
+        qtdOcorrencias++;
+        posicoes[contPos] = posFinal + 1;
+        contPos++;
+      }
+    }
   }
   return qtdOcorrencias;
 }
