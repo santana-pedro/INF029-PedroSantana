@@ -66,56 +66,62 @@ int verificarTabuleiroResultado(char jogadorTp){
         }
     }
     //VERTICAL
-    for(int i = 0; i < 3; i++){
-        if(velha[0][i].preenchido == 1){
-            int iguais = 0;
-            for(int j = 1; j < 3; j++){
-                if(velha[j][i].preenchido == 1 && velha[j][i].tipo == velha[0][i].tipo){
-                    iguais++;
+    if(achouVencedor == 0){
+        for(int i = 0; i < 3; i++){
+            if(velha[0][i].preenchido == 1){
+                int iguais = 0;
+                for(int j = 1; j < 3; j++){
+                    if(velha[j][i].preenchido == 1 && velha[j][i].tipo == velha[0][i].tipo){
+                        iguais++;
+                    }
+                }
+                if(iguais == 2){
+                    resultado.venceu = 1;
+                    resultado.tipo = velha[0][i].tipo;
+                    break;
                 }
             }
-            if(iguais == 2){
-                resultado.venceu = 1;
-                resultado.tipo = velha[0][i].tipo;
+            if(resultado.venceu == 1){
+                achouVencedor = 1;
                 break;
             }
         }
-        if(resultado.venceu == 1){
-            achouVencedor = 1;
-            break;
-        }
     }
     //DIAGONAL
-    for(int i = 0; i < 3; i++){
-        if(velha[i][i].preenchido == 1){
-            int iguais = 0;
-            for(int j = i + 1; j < 3; j++){
-                if(velha[j][j].preenchido == 1 && velha[j][j].tipo == velha[i][i].tipo){
-                    iguais++;
+    if(achouVencedor == 0){
+        //INDO
+        for(int i = 0; i < 3; i++){
+            if(velha[i][i].preenchido == 1){
+                int iguais = 0;
+                for(int j = 1; j < 3; j++){
+                    if(velha[j][j].preenchido == 1 && velha[j][j].tipo == velha[i][i].tipo){
+                        iguais++;
+                    }
                 }
+                if(iguais == 2){
+                    resultado.venceu = 1;
+                    resultado.tipo = velha[i][i].tipo;
+                    achouVencedor = 1;
+                }
+                break;
             }
-            if(iguais == 2){
-                resultado.venceu = 1;
-                resultado.tipo = velha[i][i].tipo;
-                achouVencedor = 1;
-            }
-            break;
         }
-    }
-    for(int i = 2; i >= 0; i--){
-        if(velha[i][i].preenchido == 1){
-            int iguais = 0;
-            for(int j = i - 1; j >= 0; j--){
-                if(velha[j][j].preenchido == 1 && velha[j][j].tipo == velha[i][i].tipo){
-                    iguais++;
+        //VOLTANDO
+        for(int i = 0; i < 3; ){
+            if(velha[i][2].preenchido == 1){
+                int iguais = 0;
+                for(int j = 1; j < 3; j++){
+                    if(velha[j][2 - j].preenchido == 1 && velha[j][2 - j].tipo == velha[i][2].tipo){
+                        iguais++;
+                    }
                 }
+                if(iguais == 2){
+                    resultado.venceu = 1;
+                    resultado.tipo = velha[i][2].tipo;
+                    achouVencedor = 1;
+                }
+                break;
             }
-            if(iguais == 2){
-                resultado.venceu = 1;
-                resultado.tipo = velha[i][i].tipo;
-                achouVencedor = 1;
-            }
-            break;
         }
     }
     if(achouVencedor == 1)
