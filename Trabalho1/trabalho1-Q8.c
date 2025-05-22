@@ -9,6 +9,7 @@ typedef struct Velha{
     char tipo; //X e O
 }Velha;
 Velha velha[3][3];
+int totalP = 0;
 
 void zerarTabuleiro(){
     for(int i = 0; i < 3; i++){
@@ -20,6 +21,9 @@ void zerarTabuleiro(){
 } 
 
 int verificarTabuleiroJogada(int letra, int num){
+    if(letra < 0 || letra > 2 || num < 0 || num > 2){
+        return FALSE;
+    }
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
             if(j == letra && i == num){
@@ -85,7 +89,7 @@ int verificarTabuleiroResultado(char jogadorTp){
     for(int i = 0; i < 3; i++){
         if(velha[i][i].preenchido == 1){
             int iguais = 0;
-            for(int j = 1; j < 3; j++){
+            for(int j = i + 1; j < 3; j++){
                 if(velha[j][j].preenchido == 1 && velha[j][j].tipo == velha[i][i].tipo){
                     iguais++;
                 }
@@ -93,11 +97,24 @@ int verificarTabuleiroResultado(char jogadorTp){
             if(iguais == 2){
                 resultado.venceu = 1;
                 resultado.tipo = velha[i][i].tipo;
-                break;
+                achouVencedor = 1;
             }
+            break;
         }
-        if(resultado.venceu == 1){
-            achouVencedor = 1;
+    }
+    for(int i = 2; i >= 0; i--){
+        if(velha[i][i].preenchido == 1){
+            int iguais = 0;
+            for(int j = i - 1; j >= 0; j--){
+                if(velha[j][j].preenchido == 1 && velha[j][j].tipo == velha[i][i].tipo){
+                    iguais++;
+                }
+            }
+            if(iguais == 2){
+                resultado.venceu = 1;
+                resultado.tipo = velha[i][i].tipo;
+                achouVencedor = 1;
+            }
             break;
         }
     }
@@ -120,6 +137,7 @@ void jogadaX(){
     if(verificarTabuleiroJogada(letra, num) == TRUE){
         velha[letra][num].preenchido = 1;
         velha[letra][num].tipo = 'X';
+        totalP++;
     }
     else if(verificarTabuleiroJogada(letra, num) == FALSE){
         jogadaX();
@@ -139,6 +157,7 @@ void jogadaO(){
     if(verificarTabuleiroJogada(letra, num) == TRUE){
         velha[letra][num].preenchido = 1;
         velha[letra][num].tipo = 'O';
+        totalP++;
     }
     else if(verificarTabuleiroJogada(letra, num) == FALSE){
         jogadaO();
@@ -163,21 +182,31 @@ int main(){
     char str;
     while(final == 0){
         imprimirTabuleiro();
+        if(totalP == 9){
+            break;
+        }
         jogadaX();
         str = 'X';
+        imprimirTabuleiro();
         final = verificarTabuleiroResultado(str);
         if(final == 1){
             printf("Jogador do tipo: %c ganhou \n", str);
             break;
         }
-        imprimirTabuleiro();
+        if(totalP == 9){
+            break;
+        }
         jogadaO();
         str = 'O';
         final = verificarTabuleiroResultado(str);
         if(final == 1){
+            imprimirTabuleiro();
             printf("Jogador do tipo: %c ganhou \n", str);
             break;
         }
+    }
+    if(final == 0){
+        printf("O resultado do jogo foi velha \n");
     }
     return 0;
 }
