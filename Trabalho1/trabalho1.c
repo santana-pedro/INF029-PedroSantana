@@ -253,8 +253,10 @@ DiasMesesAnos q2(char datainicial[], char datafinal[]){
     }
   }
   if(isCaseSensitive != 1){
+    c = tolower(c);
     for(int i = 0; texto[i] != '\0'; i++){
-      if(texto[i] == c || texto[i] == c + 32 || texto[i] == c - 32){
+      texto[i] = tolower(texto[i]);
+      if(texto[i] == c){
         qtdOcorrencias++;
       }
     }
