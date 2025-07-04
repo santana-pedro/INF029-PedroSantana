@@ -4,7 +4,14 @@
 
 #include "EstruturaVetores.h"
 
-int vetorPrincipal[TAM];
+typedef struct estruturaPrincipal{
+    int tamanho;
+    int elementos;
+    No *vetorAux;
+    No *principal;
+}EstruturaPrincipal;
+
+EstruturaPrincipal vetorPrincipal[TAM];
 
 /*
 Objetivo: criar estrutura auxiliar na posição 'posicao'.
@@ -17,21 +24,35 @@ Rertono (int)
     SEM_ESPACO_DE_MEMORIA - Sem espaço de memória
     TAMANHO_INVALIDO - o tamanho deve ser maior ou igual a 1
 */
+
 int criarEstruturaAuxiliar(int posicao, int tamanho)
 {
-
+    vetorPrincipal[posicao].vetorAux = malloc(tamanho * sizeof(No));
     int retorno = 0;
-    // a posicao pode já existir estrutura auxiliar
-    retorno = JA_TEM_ESTRUTURA_AUXILIAR;
-    // se posição é um valor válido {entre 1 e 10}
-    retorno = POSICAO_INVALIDA;
-    // o tamanho ser muito grande
-    retorno = SEM_ESPACO_DE_MEMORIA;
-    // o tamanho nao pode ser menor que 1
-    retorno = TAMANHO_INVALIDO;
-    // deu tudo certo, crie
-    retorno = SUCESSO;
 
+    // a posicao pode já existir estrutura auxiliar
+    if(vetorPrincipal[posicao].vetorAux != NULL){
+        retorno = JA_TEM_ESTRUTURA_AUXILIAR;
+    }
+    // se posição é um valor válido {entre 1 e 10}
+    if(ehPosicaoValida(posicao) == POSICAO_INVALIDA){
+        retorno = POSICAO_INVALIDA;
+    }
+    // o tamanho ser muito grande
+    if(vetorPrincipal[posicao].vetorAux == NULL){
+        retorno = SEM_ESPACO_DE_MEMORIA;
+    }
+    // o tamanho nao pode ser menor que 1
+    if(tamanho < 1){
+        retorno = TAMANHO_INVALIDO;
+    }
+    // deu tudo certo, crie
+    else{;
+        vetorPrincipal[posicao].elementos = 0;
+        vetorPrincipal[posicao].tamanho = tamanho;
+        retorno = SUCESSO;
+    }
+    
     return retorno;
 }
 
@@ -44,6 +65,7 @@ Rertono (int)
     POSICAO_INVALIDA - Posição inválida para estrutura auxiliar
 CONSTANTES
 */
+
 int inserirNumeroEmEstrutura(int posicao, int valor)
 {
     int retorno = 0;
@@ -51,16 +73,20 @@ int inserirNumeroEmEstrutura(int posicao, int valor)
     int temEspaco = 0;
     int posicao_invalida = 0;
 
-    if (posicao_invalida)
+    if(ehPosicaoValida(posicao) == POSICAO_INVALIDA)
         retorno = POSICAO_INVALIDA;
     else
     {
         // testar se existe a estrutura auxiliar
-        if (existeEstruturaAuxiliar)
+        if(vetorPrincipal[posicao].tamanho != 0)
         {
-            if (temEspaco)
+            if(vetorPrincipal[posicao].elementos < vetorPrincipal[posicao].tamanho)
             {
                 //insere
+                vetorPrincipal[posicao].vetorAux->conteudo = valor;
+                vetorPrincipal[posicao].vetorAux->prox = vetorPrincipal[posicao].vetorAux;
+                if(vetorPrincipal[posicao].elementos == 0)
+                    vetorPrincipal[posicao].principal = vetorPrincipal[posicao].vetorAux;
                 retorno = SUCESSO;
             }
             else
@@ -235,7 +261,7 @@ Retorno (No*)
 */
 No *montarListaEncadeadaComCabecote()
 {
-
+    
     return NULL;
 }
 
@@ -263,8 +289,11 @@ Objetivo: inicializa o programa. deve ser chamado ao inicio do programa
 
 */
 
-void inicializar()
-{
+void inicializar(){
+    for (int i = 0; i < TAM; i++) {
+        vetorPrincipal[i].vetorAux = NULL;
+        vetorPrincipal[i].tamanho = 0;
+    }
 }
 
 /*
@@ -275,4 +304,12 @@ para poder liberar todos os espaços de memória das estruturas auxiliares.
 
 void finalizar()
 {
+    for (int i = 0; i < TAM; i++) {
+        if (vetorPrincipal[i].vetorAux != NULL) {
+            free(vetorPrincipal[i].vetorAux);
+            vetorPrincipal[i].vetorAux = NULL;
+            vetorPrincipal[i].tamanho = 0;
+            vetorPrincipal[i].elementos = 0;
+        }
+    }
 }
