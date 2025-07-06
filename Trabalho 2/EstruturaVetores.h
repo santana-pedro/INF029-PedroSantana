@@ -1,5 +1,5 @@
-#ifndef TRABALHO2_H
-#define TRABALHO2_H
+#ifndef TRABALHO2_ESTRUTURAVETORES_H
+#define TRABALHO2_ESTRUTURAVETORES_H
 
 // enumeracoes (enum) ajudam a deixar o codigo mais legivel, possibilitando que voce de significado
 // as suas constantes, para mais informacoes https://en.cppreference.com/w/c/language/enum
@@ -32,4 +32,4 @@ void inicializar();
 void finalizar();
 void dobrar(int *x);
 
-#endif  // TRABALHO2_H
+#endif  // TRABALHO2_ESTRUTURAVETORES_H
