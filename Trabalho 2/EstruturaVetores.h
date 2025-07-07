@@ -11,6 +11,8 @@ enum { TODAS_ESTRUTURAS_AUXILIARES_VAZIAS = -11, NOVO_TAMANHO_INVALIDO, NUMERO_I
 
 typedef struct reg {
     int conteudo;
+    int elementos;
+    int tamanho;
     struct reg *prox;
 } No;
 

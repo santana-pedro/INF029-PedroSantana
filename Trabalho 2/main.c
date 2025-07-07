@@ -7,8 +7,7 @@ int menu();
 
 void dobrar(int *x);
 
-int menu()
-{
+int menu(){
     int op;
     printf("Digite as opção desejada\n");
     printf("0 - Sair\n");
@@ -21,8 +20,7 @@ int menu()
     return op;
 }
 
-int main()
-{
+int main(){
     inicializar();
     int op;
     int sair = 0;
