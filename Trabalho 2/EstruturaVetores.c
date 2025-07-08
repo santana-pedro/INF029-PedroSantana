@@ -17,20 +17,23 @@ Rertono (int)
     SEM_ESPACO_DE_MEMORIA - Sem espaço de memória
     TAMANHO_INVALIDO - o tamanho deve ser maior ou igual a 1
 */
+
+int ehPosicaoValida(int posicao);
+
 int criarEstruturaAuxiliar(int posicao, int tamanho){
     
     int retorno = 0;
     // a posicao pode já existir estrutura auxiliar
-    retorno = JA_TEM_ESTRUTURA_AUXILIAR;
+    if(vetorPrincipal[posicao] != NULL)
+        retorno = JA_TEM_ESTRUTURA_AUXILIAR;
     // se posição é um valor válido {entre 1 e 10}
-    if(ehPosicaoValida(posicao) == SUCESSO)
+    if(ehPosicaoValida(posicao) != SUCESSO)
         retorno = POSICAO_INVALIDA;
     // o tamanho nao pode ser menor que 1
     if(tamanho < 1)
         retorno = TAMANHO_INVALIDO;
-    // o tamanho ser muito grande
     posicao -= 1;
-    vetorPrincipal[posicao] = malloc(tamanho * sizeof(No));
+    vetorPrincipal[posicao] = malloc(sizeof(No));
     if(vetorPrincipal[posicao] == NULL)
         retorno = SEM_ESPACO_DE_MEMORIA;
     // deu tudo certo, crie
@@ -59,8 +62,9 @@ int inserirNumeroEmEstrutura(int posicao, int valor){
     int temEspaco = 0;
     int posicao_invalida = 0;
 
-    if (posicao_invalida)
+    if(ehPosicaoValida(posicao) == POSICAO_INVALIDA){
         retorno = POSICAO_INVALIDA;
+    }
     else{
         // testar se existe a estrutura auxiliar
         posicao -= 1;
@@ -71,11 +75,11 @@ int inserirNumeroEmEstrutura(int posicao, int valor){
                 novo->conteudo = valor;
                 novo->prox = NULL;
                 No *copia = vetorPrincipal[posicao];
-                while(copia->prox == NULL){
+                while(copia->prox != NULL){
                     copia = copia->prox;
                 }
                 copia->prox = novo;
-                copia->elementos++;
+                vetorPrincipal[posicao]->elementos++;
                 retorno = SUCESSO;
             }
             else{
@@ -105,12 +109,15 @@ int excluirNumeroDoFinaldaEstrutura(int posicao){
     int retorno;
     if(ehPosicaoValida(posicao) == SUCESSO){
         posicao -= 1;
-        No *copia = vetorPrincipal[posicao];
+        No *copia = vetorPrincipal[posicao]->prox;
+        No *anterior = vetorPrincipal[posicao];
         if(copia != NULL){
-            while(copia->prox == NULL){
+            while(copia->prox != NULL){
+                anterior = copia;
                 copia = copia->prox;
             }
-            copia = NULL;
+            free(copia);
+            anterior->prox = NULL;
             vetorPrincipal[posicao]->elementos--;
             retorno = SUCESSO;
         }
@@ -138,27 +145,41 @@ Rertono (int)
 int excluirNumeroEspecificoDeEstrutura(int posicao, int valor){
     int retorno;
     if(ehPosicaoValida(posicao) == SUCESSO){
-        posicao -= 1;
-        No *copia = vetorPrincipal[posicao];
-        while(copia->prox != NULL && copia->prox->conteudo != valor){
-            copia = copia->prox;
-        }
-        if(copia->prox->conteudo == valor){
-            if(copia->prox->prox != NULL){
-                copia->prox = copia->prox->prox;
+        posicao--;
+        if(vetorPrincipal[posicao] != NULL && vetorPrincipal[posicao]->elementos > 0){
+            No *apagar, *copia = vetorPrincipal[posicao]->prox;
+            while(copia->prox != NULL && copia->prox->conteudo != valor){
+                copia = copia->prox;
+            }
+            if(copia->prox->conteudo == valor){
+                if(copia->prox->prox != NULL){
+                    apagar = copia->prox;
+                    copia->prox = copia->prox->prox;
+                    free(apagar);
+                    apagar = NULL;
+                }
+                else{
+                    apagar = copia->prox;
+                    copia->prox = NULL;
+                    free(apagar);
+                    apagar = NULL;
+                }
+                vetorPrincipal[posicao]->elementos--;
+                retorno = SUCESSO;
             }
             else{
-                copia->prox = NULL;
+                retorno = NUMERO_INEXISTENTE;
             }
-            retorno = SUCESSO;
-            vetorPrincipal[posicao]->elementos--;
         }
         else{
-            retorno = NUMERO_INEXISTENTE;
+            if(vetorPrincipal[posicao] == NULL)
+                retorno = SEM_ESTRUTURA_AUXILIAR;
+            if(vetorPrincipal[posicao]->elementos <= 0)
+                retorno = ESTRUTURA_AUXILIAR_VAZIA;
         }
     }
     else
-        retorno == POSICAO_INVALIDA;
+        retorno = POSICAO_INVALIDA;
     return retorno;
 }
 
@@ -187,19 +208,23 @@ int getDadosEstruturaAuxiliar(int posicao, int vetorAux[]){
     if(ehPosicaoValida(posicao) == SUCESSO){
         posicao--;
         if(vetorPrincipal[posicao] != NULL){
-            No *copia = vetorPrincipal[posicao];
-            int contador = 0;
-            while(copia->prox != NULL){
-                vetorAux[contador] = copia->conteudo;
-                copia = copia->prox;
-                contador++;
+            if(vetorPrincipal[posicao]->elementos > 0){
+                No *copia = vetorPrincipal[posicao]->prox;
+                int contador = 0;
+                while(copia != NULL){
+                    vetorAux[contador] = copia->conteudo;
+                    copia = copia->prox;
+                    contador++;
+                }
+                retorno = SUCESSO;
             }
-            retorno = SUCESSO;
         }
         else
             retorno = SEM_ESTRUTURA_AUXILIAR;
     }
-    retorno = POSICAO_INVALIDA;
+    else{
+        retorno = POSICAO_INVALIDA;
+    }
 
     return retorno;
 }
@@ -219,28 +244,35 @@ int getDadosOrdenadosEstruturaAuxiliar(int posicao, int vetorAux[]){
     if(ehPosicaoValida(posicao) == SUCESSO){
         posicao--;
         if(vetorPrincipal[posicao] != NULL){
-            No *copia = vetorPrincipal[posicao];
-            int contador = 0;
-            while(copia->prox != NULL){
-                vetorAux[contador] = copia->conteudo;
-                copia = copia->prox;
-                contador++;
-            }
-            for(int i = 0; i < contador; i++){
-                for(int j = 0; j < contador; j++){
-                    if(vetorAux[i] > vetorAux[j]){
-                        int troca = vetorAux[j];
-                        vetorAux[j] = vetorAux[i];
-                        vetorAux[i] = troca;
+            if(vetorPrincipal[posicao]->elementos > 0){
+                No *copia = vetorPrincipal[posicao]->prox;
+                int contador = 0;
+                while(copia != NULL){
+                    vetorAux[contador] = copia->conteudo;
+                    copia = copia->prox;
+                    contador++;
+                }
+                for(int i = 0; i < contador; i++){
+                    for(int j = 0; j < contador; j++){
+                        if(vetorAux[i] < vetorAux[j]){
+                            int troca = vetorAux[j];
+                            vetorAux[j] = vetorAux[i];
+                            vetorAux[i] = troca;
+                        }
                     }
                 }
+                retorno = SUCESSO;
             }
-            retorno = SUCESSO;
+            else{
+                retorno = ESTRUTURA_AUXILIAR_VAZIA;
+            }
         }
         else
             retorno = SEM_ESTRUTURA_AUXILIAR;
     }
-    retorno = POSICAO_INVALIDA;
+    else{
+        retorno = POSICAO_INVALIDA;
+    }
 
     return retorno;
 }
@@ -259,13 +291,15 @@ int getDadosDeTodasEstruturasAuxiliares(int vetorAux[]){
 
     for(int i = 0; i < TAM; i++){
         if(vetorPrincipal[i] != NULL){
-            No *copia = vetorPrincipal[i];    
-            while(copia->prox != NULL){
-                vetorAux[contador] = copia->conteudo;
-                copia = copia->prox;
-                contador++;
+            if(vetorPrincipal[i]->elementos > 0){
+                No *copia = vetorPrincipal[i]->prox;    
+                while(copia != NULL){
+                    vetorAux[contador] = copia->conteudo;
+                    copia = copia->prox;
+                    contador++;
+                }
+                retorno = SUCESSO;
             }
-            retorno = SUCESSO;
         }
     }
     if(retorno != SUCESSO){
@@ -289,13 +323,15 @@ int getDadosOrdenadosDeTodasEstruturasAuxiliares(int vetorAux[]){
 
     for(int i = 0; i < TAM; i++){
         if(vetorPrincipal[i] != NULL){
-            No *copia = vetorPrincipal[i];    
-            while(copia->prox != NULL){
-                vetorAux[contador] = copia->conteudo;
-                copia = copia->prox;
-                contador++;
+            if(vetorPrincipal[i]->elementos > 0){
+                No *copia = vetorPrincipal[i]->prox;    
+                while(copia != NULL){
+                    vetorAux[contador] = copia->conteudo;
+                    copia = copia->prox;
+                    contador++;
+                }
+                retorno = SUCESSO;
             }
-            retorno = SUCESSO;
         }
     }
     if(retorno != SUCESSO){
@@ -328,31 +364,29 @@ Rertono (int)
 */
 int modificarTamanhoEstruturaAuxiliar(int posicao, int novoTamanho){
     int retorno = 0;
-    if(novoTamanho > 0){
-        if(ehPosicaoValida(posicao) == SUCESSO){
+    if(ehPosicaoValida(posicao) == SUCESSO){
         posicao--;
-            if(vetorPrincipal[posicao] != NULL){
-                int tamanhoAtual = vetorPrincipal[posicao]->tamanho;
-                int tamanhoDesejado = tamanhoAtual + novoTamanho;
-                No *copia = realloc(vetorPrincipal[posicao], tamanhoDesejado * sizeof(No));
-                if(copia == NULL)
-                    retorno = SEM_ESPACO_DE_MEMORIA;
-                else{
-                    vetorPrincipal[posicao] = copia;
-                    vetorPrincipal[posicao]->tamanho = tamanhoDesejado;
-                    retorno = SUCESSO;
+        if(vetorPrincipal[posicao] != NULL){
+            int tamanhoAtual = vetorPrincipal[posicao]->tamanho;
+            int tamanhoDesejado = tamanhoAtual + novoTamanho;
+            if(tamanhoDesejado >= 1){
+                vetorPrincipal[posicao]->tamanho = tamanhoDesejado;
+                if(vetorPrincipal[posicao]->elementos > tamanhoDesejado){
+                    while(vetorPrincipal[posicao]->elementos > tamanhoDesejado){
+                        excluirNumeroDoFinaldaEstrutura(posicao + 1);
+                    }
                 }
             }
             else{
-                retorno = SEM_ESTRUTURA_AUXILIAR;
+                retorno = NOVO_TAMANHO_INVALIDO;
             }
         }
         else{
-            retorno = POSICAO_INVALIDA;
+            retorno = SEM_ESTRUTURA_AUXILIAR;
         }
     }
     else{
-        retorno = NOVO_TAMANHO_INVALIDO;
+        retorno = POSICAO_INVALIDA;
     }
 
     return retorno;
@@ -372,12 +406,12 @@ int getQuantidadeElementosEstruturaAuxiliar(int posicao){
     if(ehPosicaoValida(posicao) == SUCESSO){
         posicao--;
         if(vetorPrincipal[posicao] != NULL){
-            No *copia = vetorPrincipal[posicao];
-            while(copia->conteudo && copia->prox != NULL){
-                retorno++;
-                copia = copia->prox;
+            if(vetorPrincipal[posicao]->elementos > 0){
+                retorno = vetorPrincipal[posicao]->elementos;
             }
-            
+            else{
+                retorno = ESTRUTURA_AUXILIAR_VAZIA;
+            }
         }
         else{
             retorno = SEM_ESTRUTURA_AUXILIAR;
@@ -386,7 +420,6 @@ int getQuantidadeElementosEstruturaAuxiliar(int posicao){
     else{
         retorno = POSICAO_INVALIDA;
     }
-    
 
     return retorno;
 }
@@ -399,8 +432,40 @@ Retorno (No*)
     No*, ponteiro para o início da lista com cabeçote
 */
 No *montarListaEncadeadaComCabecote(){
-
-    return NULL;
+    int retorno = 0;
+    No *listaGeral = malloc(sizeof(No));
+    if(listaGeral == NULL){
+        return NULL;
+    }
+    listaGeral->prox = NULL;
+    No *copiaListaGeral = listaGeral;
+    for(int i = 0; i < TAM; i++){
+        if(vetorPrincipal[i] != NULL){
+            if(vetorPrincipal[i]->elementos > 0){
+                No *copiaParcial = vetorPrincipal[i]->prox;
+                while(copiaParcial != NULL){
+                    No *novoNo = malloc(sizeof(No));
+                    if(novoNo == NULL){
+                        destruirListaEncadeadaComCabecote(&listaGeral);
+                        return NULL;
+                    }
+                    novoNo->conteudo = copiaParcial->conteudo;
+                    novoNo->prox = NULL;
+                    copiaListaGeral->prox = novoNo;
+                    copiaListaGeral = novoNo;
+                    copiaParcial = copiaParcial->prox;
+                }
+                retorno = SUCESSO;
+            }
+        }
+    }
+    if(retorno == SUCESSO){
+        return listaGeral;
+    }
+    else if(retorno = 0){
+        free(listaGeral);
+        return NULL;
+    }
 }
 
 /*
@@ -408,6 +473,15 @@ Objetivo: retorna os números da lista enceada com cabeçote armazenando em veto
 Retorno void
 */
 void getDadosListaEncadeadaComCabecote(No *inicio, int vetorAux[]){
+    if(inicio->prox != NULL){
+        No *copia = inicio->prox;
+        int contador = 0;
+        while(copia != NULL){
+            vetorAux[contador] = copia->conteudo;
+            copia = copia->prox;
+            contador++;
+        }
+    }
 }
 
 /*
@@ -418,6 +492,14 @@ Retorno
     void.
 */
 void destruirListaEncadeadaComCabecote(No **inicio){
+    No *copia = *inicio;
+    No *proximo;
+    while(copia != NULL){
+        proximo = copia->prox;
+        free(copia);
+        copia = proximo;
+    }
+    *inicio = NULL;
 }
 
 /*
@@ -438,4 +520,16 @@ para poder liberar todos os espaços de memória das estruturas auxiliares.
 */
 
 void finalizar(){
+    for(int i = 0; i < TAM; i++){
+        if(vetorPrincipal[i] != NULL){
+            No *copia = vetorPrincipal[i];
+            No *proximo;
+            while(copia != NULL){
+                proximo = copia->prox;
+                free(copia);
+                copia = proximo;
+            }
+        }
+        vetorPrincipal[i] = NULL;
+    }
 }
