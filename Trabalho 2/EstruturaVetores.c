@@ -23,19 +23,27 @@ int ehPosicaoValida(int posicao);
 int criarEstruturaAuxiliar(int posicao, int tamanho){
     
     int retorno = 0;
-    // a posicao pode já existir estrutura auxiliar
-    if(vetorPrincipal[posicao] != NULL)
-        retorno = JA_TEM_ESTRUTURA_AUXILIAR;
     // se posição é um valor válido {entre 1 e 10}
-    if(ehPosicaoValida(posicao) != SUCESSO)
+    if(ehPosicaoValida(posicao) == POSICAO_INVALIDA){
         retorno = POSICAO_INVALIDA;
+        return retorno;
+    }
+    posicao--;
+    // a posicao pode já existir estrutura auxiliar
+    if(vetorPrincipal[posicao] != NULL){
+        retorno = JA_TEM_ESTRUTURA_AUXILIAR;
+        return retorno;
+    }
     // o tamanho nao pode ser menor que 1
-    if(tamanho < 1)
+    if(tamanho < 1){
         retorno = TAMANHO_INVALIDO;
-    posicao -= 1;
+        return retorno;
+    }
     vetorPrincipal[posicao] = malloc(sizeof(No));
-    if(vetorPrincipal[posicao] == NULL)
+    if(vetorPrincipal[posicao] == NULL){
         retorno = SEM_ESPACO_DE_MEMORIA;
+        return retorno;
+    }
     // deu tudo certo, crie
     else{
         vetorPrincipal[posicao]->elementos = 0;
@@ -67,9 +75,9 @@ int inserirNumeroEmEstrutura(int posicao, int valor){
     }
     else{
         // testar se existe a estrutura auxiliar
-        posicao -= 1;
+        posicao--;
         if(vetorPrincipal[posicao] != NULL){
-            if(vetorPrincipal[posicao]->elementos <= vetorPrincipal[posicao]->tamanho){
+            if(vetorPrincipal[posicao]->elementos < vetorPrincipal[posicao]->tamanho){
                 //insere
                 No *novo = malloc(sizeof(No));
                 novo->conteudo = valor;
@@ -90,7 +98,6 @@ int inserirNumeroEmEstrutura(int posicao, int valor){
             retorno = SEM_ESTRUTURA_AUXILIAR;
         }
     }
-
     return retorno;
 }
 
