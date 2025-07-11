@@ -116,17 +116,23 @@ int excluirNumeroDoFinaldaEstrutura(int posicao){
     int retorno;
     if(ehPosicaoValida(posicao) == SUCESSO){
         posicao -= 1;
-        No *copia = vetorPrincipal[posicao]->prox;
-        No *anterior = vetorPrincipal[posicao];
-        if(copia != NULL){
-            while(copia->prox != NULL){
-                anterior = copia;
-                copia = copia->prox;
+        
+        if(vetorPrincipal[posicao]){
+            No *copia = vetorPrincipal[posicao]->prox;
+            if(copia){
+                No *anterior = vetorPrincipal[posicao];
+                while(copia->prox != NULL){
+                    anterior = copia;
+                    copia = copia->prox;
+                }
+                free(copia);
+                anterior->prox = NULL;
+                vetorPrincipal[posicao]->elementos--;
+                retorno = SUCESSO;
             }
-            free(copia);
-            anterior->prox = NULL;
-            vetorPrincipal[posicao]->elementos--;
-            retorno = SUCESSO;
+            else{
+                retorno = ESTRUTURA_AUXILIAR_VAZIA;
+            }
         }
         else
             retorno = SEM_ESTRUTURA_AUXILIAR;
@@ -153,36 +159,48 @@ int excluirNumeroEspecificoDeEstrutura(int posicao, int valor){
     int retorno;
     if(ehPosicaoValida(posicao) == SUCESSO){
         posicao--;
-        if(vetorPrincipal[posicao] != NULL && vetorPrincipal[posicao]->elementos > 0){
-            No *apagar, *copia = vetorPrincipal[posicao]->prox;
-            while(copia->prox != NULL && copia->prox->conteudo != valor){
-                copia = copia->prox;
-            }
-            if(copia->prox->conteudo == valor){
-                if(copia->prox->prox != NULL){
-                    apagar = copia->prox;
-                    copia->prox = copia->prox->prox;
-                    free(apagar);
-                    apagar = NULL;
+        if(vetorPrincipal[posicao]){
+            No *copia = vetorPrincipal[posicao]->prox;
+            No *ant = vetorPrincipal[posicao];
+            if(copia){
+                if(copia->conteudo == valor){
+                    if(copia->prox){
+                        vetorPrincipal[posicao]->prox = copia->prox;
+                        vetorPrincipal[posicao]->elementos--;
+                    }
+                    else{
+                        vetorPrincipal[posicao]->prox = NULL;
+                        vetorPrincipal[posicao]->elementos--;
+                    }
+                    free(copia);
+                    copia = NULL;
                 }
                 else{
-                    apagar = copia->prox;
-                    copia->prox = NULL;
-                    free(apagar);
-                    apagar = NULL;
+                    while(copia->prox != NULL && copia->conteudo != valor){
+                        ant = copia;
+                        copia = copia->prox;
+                    }
+                    if(copia->conteudo == valor){
+                        if(copia->prox){
+                            ant->prox = copia->prox;
+                        }
+                        else{
+                            ant->prox = NULL;
+                        }
+                        free(copia);
+                        copia = NULL;
+                    }
+                    else{
+                        retorno = NUMERO_INEXISTENTE;
+                    }
                 }
-                vetorPrincipal[posicao]->elementos--;
-                retorno = SUCESSO;
             }
             else{
-                retorno = NUMERO_INEXISTENTE;
+                retorno = ESTRUTURA_AUXILIAR_VAZIA;
             }
         }
         else{
-            if(vetorPrincipal[posicao] == NULL)
-                retorno = SEM_ESTRUTURA_AUXILIAR;
-            if(vetorPrincipal[posicao]->elementos <= 0)
-                retorno = ESTRUTURA_AUXILIAR_VAZIA;
+            retorno = SEM_ESTRUTURA_AUXILIAR;
         }
     }
     else
@@ -347,7 +365,7 @@ int getDadosOrdenadosDeTodasEstruturasAuxiliares(int vetorAux[]){
     else if(retorno == SUCESSO){
         for(int i = 0; i < contador; i++){
             for(int j = 0; j < contador; j++){
-                if(vetorAux[i] > vetorAux[j]){
+                if(vetorAux[i] < vetorAux[j]){
                     int troca = vetorAux[j];
                     vetorAux[j] = vetorAux[i];
                     vetorAux[i] = troca;
@@ -373,16 +391,20 @@ int modificarTamanhoEstruturaAuxiliar(int posicao, int novoTamanho){
     int retorno = 0;
     if(ehPosicaoValida(posicao) == SUCESSO){
         posicao--;
-        if(vetorPrincipal[posicao] != NULL){
+        if(vetorPrincipal[posicao]){
             int tamanhoAtual = vetorPrincipal[posicao]->tamanho;
             int tamanhoDesejado = tamanhoAtual + novoTamanho;
             if(tamanhoDesejado >= 1){
                 vetorPrincipal[posicao]->tamanho = tamanhoDesejado;
-                if(vetorPrincipal[posicao]->elementos > tamanhoDesejado){
-                    while(vetorPrincipal[posicao]->elementos > tamanhoDesejado){
-                        excluirNumeroDoFinaldaEstrutura(posicao + 1);
+                if(vetorPrincipal[posicao]->prox){
+                    if(vetorPrincipal[posicao]->elementos > tamanhoDesejado){
+                        int posicao2 = posicao + 1;
+                        while(vetorPrincipal[posicao]->elementos > tamanhoDesejado){
+                            excluirNumeroDoFinaldaEstrutura(posicao2);
+                        }
                     }
                 }
+                retorno = SUCESSO;
             }
             else{
                 retorno = NOVO_TAMANHO_INVALIDO;
